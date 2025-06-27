@@ -54,7 +54,7 @@ class UserEntity(
         joinColumns = [JoinColumn(name = "user_entity_id")],
         inverseJoinColumns = [JoinColumn(name = "favorites_id")]
     )
-    @JsonManagedReference
+    @JsonManagedReference("user-favorites")
     val favorites: MutableSet<PostEntity> = mutableSetOf(),
 
     @ManyToMany
@@ -75,6 +75,6 @@ class UserEntity(
 
 ) {
     override fun toString(): String {
-        return ("UserEntity(id=$id, username=$username, firstname=$firstname, lastname=$lastname, email=$email)")
+        return ("UserEntity(id=$id, username=$username, firstname=$firstname, lastname=$lastname, email=$email), posts=$posts, messages=$messages, contacts=$contacts, chats=$chats, comments=$comments, favorites=$favorites, likedPosts=$likedPosts, dislikedPosts=$dislikedPosts")
     }
 }

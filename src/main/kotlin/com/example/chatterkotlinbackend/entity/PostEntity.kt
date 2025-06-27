@@ -47,11 +47,11 @@ data class PostEntity(
         fetch = FetchType.LAZY,
         cascade = [CascadeType.PERSIST, CascadeType.MERGE],
     )
-    @JsonBackReference
+    @JsonBackReference("user-comments")
     var comments: MutableList<CommentEntity> = mutableListOf(),
 
     @ManyToMany(mappedBy = "favorites")
-    @JsonBackReference
+    @JsonBackReference("user-favorites")
     var favoritedBy: MutableList<UserEntity> = mutableListOf(),
 
     @ManyToMany(mappedBy = "likedPosts")

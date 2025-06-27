@@ -2,6 +2,7 @@ package com.example.chatterkotlinbackend.controller
 
 import com.example.chatterkotlinbackend.GoogleAuthUser
 import com.example.chatterkotlinbackend.dto.UserDTO
+import com.example.chatterkotlinbackend.dto.UserUpdateDTO
 import com.example.chatterkotlinbackend.entity.UserEntity
 import com.example.chatterkotlinbackend.mapper.UserMapper
 import com.example.chatterkotlinbackend.repository.UserRepository
@@ -50,7 +51,7 @@ class UserController {
     @PutMapping("/{userId}")
     fun updateUser(
         @PathVariable userId: String,
-        @RequestBody updatedUser: UserEntity,
+        @RequestBody updatedUser: UserUpdateDTO,
         request: HttpServletRequest
     ): ResponseEntity<UserEntity> {
         println("Spring sees Content-Type: ${request.contentType}")
