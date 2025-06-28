@@ -1,1 +1,1 @@
-rootProject.name = "chatter-kotlin-backend"
+rootProject.name = "kiwi-social-backend"
