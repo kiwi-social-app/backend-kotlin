@@ -47,7 +47,7 @@ data class PostEntity(
         fetch = FetchType.LAZY,
         cascade = [CascadeType.PERSIST, CascadeType.MERGE],
     )
-    @JsonBackReference("user-comments")
+    @JsonBackReference("post-comments")
     var comments: MutableList<CommentEntity> = mutableListOf(),
 
     @ManyToMany(mappedBy = "favorites")
@@ -55,9 +55,11 @@ data class PostEntity(
     var favoritedBy: MutableList<UserEntity> = mutableListOf(),
 
     @ManyToMany(mappedBy = "likedPosts")
+    @JsonBackReference("user-likes")
     val likedByUsers: MutableList<UserEntity> = mutableListOf(),
 
     @ManyToMany(mappedBy = "dislikedPosts")
+    @JsonBackReference("user-dislikes")
     val dislikedByUsers: MutableList<UserEntity> = mutableListOf()
 
 ) {

@@ -29,16 +29,22 @@ class UserEntity(
         cascade = [CascadeType.PERSIST, CascadeType.MERGE],
     )
     @JsonBackReference("user-posts")
-    var posts: MutableList<PostEntity>? = null,
+    var posts: MutableList<PostEntity> = mutableListOf(),
 
     @OneToMany(mappedBy = "sender", cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JsonBackReference("user-messages")
     var messages: MutableList<MessageEntity>? = mutableListOf(),
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
-    val contacts: MutableSet<ContactEntity> = mutableSetOf(),
+    @OneToMany(mappedBy = "requester")
+    @JsonBackReference("user-contacts-sent")
+    val sentContacts: MutableSet<ContactEntity> = mutableSetOf(),
+
+    @OneToMany(mappedBy = "recipient")
+@JsonBackReference("user-contacts-received")
+val receivedContacts: MutableSet<ContactEntity> = mutableSetOf(),
 
     @ManyToMany(mappedBy = "participants")
+    @JsonBackReference("user-chats")
     var chats: MutableSet<ChatEntity> = mutableSetOf(),
 
     @OneToMany(
@@ -46,7 +52,7 @@ class UserEntity(
         orphanRemoval = true
     )
     @JsonBackReference("user-comments")
-    var comments: MutableSet<CommentEntity>? = null,
+    var comments: MutableSet<CommentEntity>? = mutableSetOf(),
 
     @ManyToMany(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinTable(
@@ -63,6 +69,7 @@ class UserEntity(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "post_id")]
     )
+    @JsonManagedReference("user-likes")
     val likedPosts: MutableSet<PostEntity> = mutableSetOf(),
 
     @ManyToMany
@@ -71,10 +78,11 @@ class UserEntity(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "post_id")]
     )
+    @JsonManagedReference("user-dislikes")
     val dislikedPosts: MutableSet<PostEntity> = mutableSetOf()
 
 ) {
     override fun toString(): String {
-        return ("UserEntity(id=$id, username=$username, firstname=$firstname, lastname=$lastname, email=$email), posts=$posts, messages=$messages, contacts=$contacts, chats=$chats, comments=$comments, favorites=$favorites, likedPosts=$likedPosts, dislikedPosts=$dislikedPosts")
+        return ("UserEntity(id=$id, username=$username, firstname=$firstname, lastname=$lastname, email=$email, posts=$posts, messages=$messages, sentContacts=$sentContacts, receivedContacts=$receivedContacts, chats=$chats, comments=$comments, favorites=$favorites, likedPosts=$likedPosts, dislikedPosts=$dislikedPosts")
     }
 }

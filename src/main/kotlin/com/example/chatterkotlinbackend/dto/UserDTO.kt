@@ -6,7 +6,8 @@ class UserDTO {
     var email: String = "example@email.com";
     var firstname: String? = null;
     var lastname: String? = null;
-    val contacts: List<ContactDTO>? = null;
+    val sentContacts: List<ContactDTO>? = null;
+    val receivedContacts: List<ContactDTO>? = null;
     val chats: List<ChatDTO>? = null;
     var favorites: List<String> = ArrayList();
     var likedPosts: List<String> = ArrayList();

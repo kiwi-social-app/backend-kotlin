@@ -52,9 +52,7 @@ class UserController {
     fun updateUser(
         @PathVariable userId: String,
         @RequestBody updatedUser: UserUpdateDTO,
-        request: HttpServletRequest
-    ): ResponseEntity<UserEntity> {
-        println("Spring sees Content-Type: ${request.contentType}")
+    ): ResponseEntity<UserDTO> {
         return try {
             val existingUser = userRepository.findById(userId)
             if (existingUser.isPresent) {
@@ -73,13 +71,13 @@ class UserController {
                     userToUpdate.lastname = updatedUser.lastname
                 }
                 val updatedUserEntity = userRepository.save(userToUpdate)
-                ResponseEntity(updatedUserEntity, HttpStatus.OK)
+                ResponseEntity(mapper.toDto(updatedUserEntity), HttpStatus.OK)
             } else {
                 ResponseEntity(HttpStatus.NOT_FOUND)
             }
+
         } catch (e: Exception) {
             ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
-
     }
 }

@@ -1,5 +1,6 @@
 package com.example.chatterkotlinbackend.entity
 
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 import java.util.*
 
@@ -23,6 +24,7 @@ data class ChatEntity(
         joinColumns = [JoinColumn(name = "chat_id")],
         inverseJoinColumns = [JoinColumn(name = "user_id")]
     )
+    @JsonManagedReference("user-chats")
     var participants: MutableSet<UserEntity> = mutableSetOf()
 ) {
 }

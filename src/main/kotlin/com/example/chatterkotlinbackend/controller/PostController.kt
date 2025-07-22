@@ -98,12 +98,9 @@ class PostController {
     fun updatePost(
         @PathVariable id: String,
         @RequestBody updatedPost: PostEntity
-    ): ResponseEntity<PostEntity> {
+    ): ResponseEntity<PostDTO> {
         return try {
             val existingPost = postRepository.findById(id)
-            println("ID: $id")
-            println("EXISTING POST: $existingPost")
-            println("UPDATED POST: $updatedPost")
             if (existingPost.isPresent) {
                 val postToUpdate = existingPost.get()
 
@@ -112,7 +109,7 @@ class PostController {
                 }
 
                 val updatedPostEntity = postRepository.save(postToUpdate)
-                ResponseEntity(updatedPostEntity, HttpStatus.OK)
+                ResponseEntity(postMapper.toDto(updatedPostEntity), HttpStatus.OK)
 
             } else {
                 ResponseEntity(HttpStatus.NOT_FOUND)
