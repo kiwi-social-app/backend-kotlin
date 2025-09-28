@@ -16,7 +16,7 @@ interface MessageMapper {
     @Mapping(target = "chatId", source = "dto.chatId")
     fun toEntity(dto: MessageDTO, sender: UserEntity): MessageEntity;
 
-    @Mapping(source = "sender.id", target = "senderId")
+    @Mapping(source = "sender", target = "sender")
     @Mapping(source = "content", target = "content")
     @Mapping(source = "timestamp", target = "timestamp")
     @Mapping(source = "chatId", target = "chatId")

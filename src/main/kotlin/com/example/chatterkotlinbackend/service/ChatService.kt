@@ -21,12 +21,12 @@ class ChatService(
 
     @Transactional
     fun saveMessage(dto: MessageDTO): MessageDTO {
-        if (dto.senderId.isNullOrBlank()) {
+        if (dto.sender.id.isNullOrBlank()) {
             throw IllegalArgumentException("Sender ID cannot be null or empty")
         }
 
-        val user = userRepository.findById(dto.senderId)
-            .orElseThrow { IllegalArgumentException("User not found with ID: ${dto.senderId}") }
+        val user = userRepository.findById(dto.sender.id)
+            .orElseThrow { IllegalArgumentException("User not found with ID: ${dto.sender.id}") }
 
         dto.id = UUID.randomUUID().toString();
         val messageEntity = mapper.toEntity(dto, user)
