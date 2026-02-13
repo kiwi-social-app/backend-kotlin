@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service
 class PostService(
     private val postRepository: PostRepository,
     private val mapper: PostMapper,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val semanticSearchService: SemanticSearchService
 ) {
 
     @Transactional
@@ -25,6 +26,8 @@ class PostService(
         val postEntity = PostEntity(body = dto.body, author = author)
 
         val savedPost = postRepository.save(postEntity)
+
+        semanticSearchService.addDocument(savedPost.body, savedPost.id)
 
         return mapper.toDto(savedPost)
     }

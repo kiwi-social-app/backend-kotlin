@@ -25,6 +25,9 @@ class VectorStoreConfig {
     ): PgVectorStore {
         val jdbcTemplate = JdbcTemplate(dataSource)
 
-        return PgVectorStore.builder(jdbcTemplate, embeddingService).build()
+        return PgVectorStore.builder(jdbcTemplate, embeddingService)
+            .initializeSchema(true)
+            .dimensions(768)
+            .build()
     }
 }
