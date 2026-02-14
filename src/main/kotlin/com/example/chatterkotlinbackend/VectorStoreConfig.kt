@@ -1,6 +1,6 @@
 package com.example.chatterkotlinbackend
 
-import OllamaEmbeddingService
+import com.example.chatterkotlinbackend.service.OllamaEmbeddingService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.core.JdbcTemplate
@@ -12,22 +12,21 @@ import org.springframework.web.reactive.function.client.WebClient
 @Configuration
 class VectorStoreConfig {
 
-    @Bean
-    fun ollamaEmbeddingService(webClientBuilder: WebClient.Builder,
-                               @Value("\${spring.ai.ollama.base-url}") ollamaUrl: String): OllamaEmbeddingService {
-        return OllamaEmbeddingService(webClientBuilder, ollamaUrl)
-    }
+     @Bean
+     fun ollamaEmbeddingService(webClientBuilder: WebClient.Builder): OllamaEmbeddingService {
+         return OllamaEmbeddingService(webClientBuilder)
+     }
 
-    @Bean
-    fun vectorStore(
-        dataSource: DataSource,
-        embeddingService: OllamaEmbeddingService
-    ): PgVectorStore {
+     @Bean
+     fun vectorStore(
+         dataSource: DataSource,
+         embeddingService: OllamaEmbeddingService
+     ): PgVectorStore {
         val jdbcTemplate = JdbcTemplate(dataSource)
 
-        return PgVectorStore.builder(jdbcTemplate, embeddingService)
-            .initializeSchema(true)
-            .dimensions(768)
-            .build()
+         return PgVectorStore.builder(jdbcTemplate, embeddingService)
+             .initializeSchema(true)
+             .dimensions(768)
+             .build()
     }
 }

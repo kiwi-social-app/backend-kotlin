@@ -45,6 +45,7 @@ dependencies {
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     implementation("com.pgvector:pgvector")
     kapt("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql:42.7.3")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
