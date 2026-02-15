@@ -2,7 +2,6 @@ package com.example.chatterkotlinbackend.controller
 
 import com.example.chatterkotlinbackend.dto.CommentCreationDTO
 import com.example.chatterkotlinbackend.dto.CommentDTO
-import com.example.chatterkotlinbackend.entity.CommentEntity
 import com.example.chatterkotlinbackend.mapper.CommentMapper
 import com.example.chatterkotlinbackend.repository.CommentRepository
 import com.example.chatterkotlinbackend.service.CommentService
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 
 @RestController
 @RequestMapping("/comments")
@@ -27,10 +27,10 @@ class CommentController {
     @PostMapping
     fun createComment(
         @RequestBody comment: CommentCreationDTO,
-        @RequestParam userId: String,
         @RequestParam postId: String,
+        principal: Principal
     ): CommentDTO {
-        return commentService.createComment(comment, userId, postId)
+        return commentService.createComment(comment, principal.name, postId)
     }
 
     @GetMapping("/{postId}")

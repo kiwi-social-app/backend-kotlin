@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 
 @RestController
 @RequestMapping("/chat")
@@ -47,22 +48,22 @@ class ChatController(
         return ResponseEntity.ok(messages)
     }
 
-    @GetMapping("{userId}/{chatId}")
-    fun getChat(@PathVariable userId: String, @PathVariable chatId: String): ChatDTO {
-        return mapper.toDto(service.getChat(userId, chatId))
+    @GetMapping("/{chatId}")
+    fun getChat(@PathVariable chatId: String, principal: Principal): ChatDTO {
+        return mapper.toDto(service.getChat(principal.name, chatId))
     }
 
-    @GetMapping("/user/{userId}")
-    fun getUserChats(@PathVariable userId: String): List<ChatDTO> {
-        return mapper.toDto(service.getChats(userId))
+    @GetMapping("/user/me")
+    fun getUserChats(principal: Principal): List<ChatDTO> {
+        return mapper.toDto(service.getChats(principal.name))
     }
 
-    @PostMapping("/start/{userId}")
+    @PostMapping("/start")
     fun startChat(
-        @PathVariable userId: String,
-        @RequestBody request: StartChatRequestDTO
+        @RequestBody request: StartChatRequestDTO,
+        principal: Principal
     ): ResponseEntity<ChatDTO> {
-        val chat = service.startChat(userId, request.participantIds)
+        val chat = service.startChat(principal.name, request.participantIds)
 
         return ResponseEntity.ok(mapper.toDto(chat))
     }

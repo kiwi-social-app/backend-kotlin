@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 import java.time.LocalDateTime
 import java.util.*
 
@@ -47,8 +48,9 @@ class PostController {
     @PostMapping
     fun createPost(
         @RequestBody post: PostCreationDTO,
-        @RequestParam userId: String
+        principal: Principal
     ): PostDTO {
+        val userId = principal.name
         return this.postService.createPost(post, userId)
     }
 
@@ -123,45 +125,45 @@ class PostController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun favoritePost(
         @PathVariable postId: String,
-        @RequestParam userId: String
+        principal: Principal
     ) {
-        postService.favoritePost(postId, userId)
+        postService.favoritePost(postId, principal.name)
     }
 
     @DeleteMapping("/{postId}/favorite")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun unfavoritePost(
         @PathVariable postId: String,
-        @RequestParam userId: String
-    ) = postService.unfavoritePost(postId, userId)
+        principal: Principal
+    ) = postService.unfavoritePost(postId, principal.name)
 
     @GetMapping("/favorites")
-    fun getUserFavorites(@RequestParam userId: String): List<PostDTO> {
-      return  postMapper.toDto(postService.getFavoritesByUser(userId))
+    fun getUserFavorites(principal: Principal): List<PostDTO> {
+      return  postMapper.toDto(postService.getFavoritesByUser(principal.name))
     }
 
     @GetMapping("/{postId}/is-favorited")
     fun isFavorited(
         @PathVariable postId: String,
-        @RequestParam userId: String
-    ): Boolean = postService.isPostFavoritedByUser(postId, userId)
+        principal: Principal
+    ): Boolean = postService.isPostFavoritedByUser(postId, principal.name)
 
     @PostMapping("/{postId}/like")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun addLike(
         @PathVariable postId: String,
-        @RequestParam userId: String
+        principal: Principal
     ) {
-        postService.addLike(postId, userId)
+        postService.addLike(postId, principal.name)
     }
 
     @DeleteMapping("/{postId}/like")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun removeLike(
         @PathVariable postId: String,
-        @RequestParam userId: String
+        principal: Principal
     ) {
-        postService.removeLike(postId, userId)
+        postService.removeLike(postId, principal.name)
     }
 
 
@@ -169,17 +171,17 @@ class PostController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun addDislike(
         @PathVariable postId: String,
-        @RequestParam userId: String
+        principal: Principal
     ) {
-        postService.addDislike(postId, userId)
+        postService.addDislike(postId, principal.name)
     }
 
     @DeleteMapping("/{postId}/dislike")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun removeDislike(
         @PathVariable postId: String,
-        @RequestParam userId: String
+        principal: Principal
     ) {
-        postService.removeDislike(postId, userId)
+        postService.removeDislike(postId, principal.name)
     }
 }
