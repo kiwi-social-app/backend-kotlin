@@ -40,11 +40,7 @@ class CommentController {
         return try {
             val comments: List<CommentDTO> = commentRepository.findByPostId(postId).map { commentMapper.toDto(it) }
 
-            if (comments.isEmpty()) {
-                ResponseEntity(HttpStatus.NO_CONTENT)
-            } else {
-                ResponseEntity(comments, HttpStatus.OK)
-            }
+            ResponseEntity(comments, HttpStatus.OK)
         } catch (e: Exception) {
             ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR)
         }
