@@ -137,6 +137,11 @@ class PostController {
         principal: Principal
     ) = postService.unfavoritePost(postId, principal.name)
 
+    @GetMapping("/mine")
+    fun getCurrentUserPosts(principal: Principal): List<PostDTO> {
+        return postMapper.toDto(postRepository.findByAuthorId(principal.name))
+    }
+
     @GetMapping("/favorites")
     fun getUserFavorites(principal: Principal): List<PostDTO> {
       return  postMapper.toDto(postService.getFavoritesByUser(principal.name))
