@@ -32,22 +32,22 @@ class PostService(
         return mapper.toDto(savedPost)
     }
 
+    @Transactional
     fun favoritePost(postId: String, userId: String) {
         val post = postRepository.findById(postId).orElseThrow { RuntimeException("Post not found") }
         val user = userRepository.findById(userId).orElseThrow { RuntimeException("User not found") }
 
         if (post.favoritedBy.add(user)) {
-            user.favorites.add(post)
-            userRepository.save(user)
+            postRepository.save(post)
         }
     }
 
+    @Transactional
     fun unfavoritePost(postId: String, userId: String) {
         val post = postRepository.findById(postId).orElseThrow { RuntimeException("Post not found") }
         val user = userRepository.findById(userId).orElseThrow { RuntimeException("User not found") }
 
         if (post.favoritedBy.remove(user)) {
-            user.favorites.remove(post)
             postRepository.save(post)
         }
     }
@@ -62,47 +62,44 @@ class PostService(
         return post.favoritedBy.any { it.id == userId }
     }
 
+    @Transactional
     fun addLike(postId: String, userId: String) {
         val post = postRepository.findById(postId).orElseThrow()
         val user = userRepository.findById(userId).orElseThrow()
 
-
         if (post.likedByUsers.add(user)) {
-            user.likedPosts.add(post)
-            user.dislikedPosts.remove(post)
             post.dislikedByUsers.remove(user)
-            userRepository.save(user)
+            postRepository.save(post)
         }
     }
 
+    @Transactional
     fun removeLike(postId: String, userId: String) {
         val post = postRepository.findById(postId).orElseThrow { RuntimeException("Post not found") }
         val user = userRepository.findById(userId).orElseThrow { RuntimeException("User not found") }
 
         if (post.likedByUsers.remove(user)) {
-            user.likedPosts.remove(post)
             postRepository.save(post)
         }
     }
 
+    @Transactional
     fun addDislike(postId: String, userId: String) {
         val post = postRepository.findById(postId).orElseThrow()
         val user = userRepository.findById(userId).orElseThrow()
 
         if (post.dislikedByUsers.add(user)) {
-            user.dislikedPosts.add(post)
-            user.likedPosts.remove(post)
             post.likedByUsers.remove(user)
-            userRepository.save(user)
+            postRepository.save(post)
         }
     }
 
+    @Transactional
     fun removeDislike(postId: String, userId: String) {
         val post = postRepository.findById(postId).orElseThrow { RuntimeException("Post not found") }
         val user = userRepository.findById(userId).orElseThrow { RuntimeException("User not found") }
 
         if (post.dislikedByUsers.remove(user)) {
-            user.dislikedPosts.remove(post)
             postRepository.save(post)
         }
     }

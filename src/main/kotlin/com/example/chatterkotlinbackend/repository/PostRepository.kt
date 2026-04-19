@@ -7,4 +7,6 @@ import java.util.*
 interface PostRepository : JpaRepository<PostEntity, String> {
     fun findById(id: String?): Optional<PostEntity>
     fun findByAuthorId(id: String?): List<PostEntity>
+    fun findAllByOrderByCreatedAtDesc(): List<PostEntity>
+    fun findByAuthorIdOrderByCreatedAtDesc(id: String?): List<PostEntity>
 }

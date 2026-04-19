@@ -54,30 +54,15 @@ val receivedContacts: MutableSet<ContactEntity> = mutableSetOf(),
     @JsonBackReference("user-comments")
     var comments: MutableSet<CommentEntity>? = mutableSetOf(),
 
-    @ManyToMany(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
-    @JoinTable(
-        name = "users_favorites",
-        joinColumns = [JoinColumn(name = "user_entity_id")],
-        inverseJoinColumns = [JoinColumn(name = "favorites_id")]
-    )
+    @ManyToMany(mappedBy = "favoritedBy")
     @JsonManagedReference("user-favorites")
     val favorites: MutableSet<PostEntity> = mutableSetOf(),
 
-    @ManyToMany
-    @JoinTable(
-        name = "user_likes",
-        joinColumns = [JoinColumn(name = "user_id")],
-        inverseJoinColumns = [JoinColumn(name = "post_id")]
-    )
+    @ManyToMany(mappedBy = "likedByUsers")
     @JsonManagedReference("user-likes")
     val likedPosts: MutableSet<PostEntity> = mutableSetOf(),
 
-    @ManyToMany
-    @JoinTable(
-        name = "user_dislikes",
-        joinColumns = [JoinColumn(name = "user_id")],
-        inverseJoinColumns = [JoinColumn(name = "post_id")]
-    )
+    @ManyToMany(mappedBy = "dislikedByUsers")
     @JsonManagedReference("user-dislikes")
     val dislikedPosts: MutableSet<PostEntity> = mutableSetOf()
 

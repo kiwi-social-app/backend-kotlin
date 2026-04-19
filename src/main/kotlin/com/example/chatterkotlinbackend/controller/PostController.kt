@@ -2,6 +2,7 @@ package com.example.chatterkotlinbackend.controller
 
 import com.example.chatterkotlinbackend.dto.PostCreationDTO
 import com.example.chatterkotlinbackend.dto.PostDTO
+import com.example.chatterkotlinbackend.dto.PostUpdateDTO
 import com.example.chatterkotlinbackend.entity.PostEntity
 import com.example.chatterkotlinbackend.entity.UserEntity
 import com.example.chatterkotlinbackend.mapper.PostMapper
@@ -33,7 +34,7 @@ class PostController {
     @GetMapping
     fun allPosts(): ResponseEntity<List<PostDTO>> {
         return try {
-            val posts: List<PostDTO> = postRepository.findAll().map { postMapper.toDto(it) }
+            val posts: List<PostDTO> = postRepository.findAllByOrderByCreatedAtDesc().map { postMapper.toDto(it) }
             if (posts.isEmpty()) {
                 ResponseEntity(HttpStatus.NO_CONTENT)
             } else {
@@ -67,7 +68,7 @@ class PostController {
     @GetMapping("/user/{id}")
     fun getPostsByUser(@PathVariable id: String): ResponseEntity<List<PostDTO>> {
         return try {
-            val posts: List<PostDTO> = postRepository.findByAuthorId(id).map { postMapper.toDto(it) }
+            val posts: List<PostDTO> = postRepository.findByAuthorIdOrderByCreatedAtDesc(id).map { postMapper.toDto(it) }
             if (posts.isEmpty()) {
                 ResponseEntity(HttpStatus.NO_CONTENT)
             } else {
@@ -99,15 +100,16 @@ class PostController {
     @PutMapping("/{id}")
     fun updatePost(
         @PathVariable id: String,
-        @RequestBody updatedPost: PostEntity
+        @RequestBody update: PostUpdateDTO
     ): ResponseEntity<PostDTO> {
         return try {
             val existingPost = postRepository.findById(id)
             if (existingPost.isPresent) {
                 val postToUpdate = existingPost.get()
 
-                if (postToUpdate.body != updatedPost.body) {
-                    postToUpdate.body = updatedPost.body
+                if (postToUpdate.body != update.body) {
+                    postToUpdate.body = update.body
+                    postToUpdate.updatedAt = LocalDateTime.now()
                 }
 
                 val updatedPostEntity = postRepository.save(postToUpdate)
@@ -139,7 +141,7 @@ class PostController {
 
     @GetMapping("/mine")
     fun getCurrentUserPosts(principal: Principal): List<PostDTO> {
-        return postMapper.toDto(postRepository.findByAuthorId(principal.name))
+        return postMapper.toDto(postRepository.findByAuthorIdOrderByCreatedAtDesc(principal.name))
     }
 
     @GetMapping("/favorites")

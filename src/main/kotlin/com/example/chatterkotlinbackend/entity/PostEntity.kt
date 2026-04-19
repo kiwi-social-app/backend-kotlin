@@ -45,20 +45,35 @@ data class PostEntity(
     @OneToMany(
         mappedBy = "post",
         fetch = FetchType.LAZY,
-        cascade = [CascadeType.PERSIST, CascadeType.MERGE],
-    )
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+        )
     @JsonBackReference("post-comments")
     var comments: MutableList<CommentEntity> = mutableListOf(),
 
-    @ManyToMany(mappedBy = "favorites")
-    @JsonBackReference("user-favorites")
+       @ManyToMany
+      @JoinTable(
+          name = "users_favorites",
+          joinColumns = [JoinColumn(name = "favorites_id")],
+          inverseJoinColumns = [JoinColumn(name = "user_entity_id")]
+      )
+@JsonBackReference("user-favorites")
     var favoritedBy: MutableList<UserEntity> = mutableListOf(),
 
-    @ManyToMany(mappedBy = "likedPosts")
-    @JsonBackReference("user-likes")
+    @ManyToMany
+        @JoinTable(
+        name = "user_likes",
+        joinColumns = [JoinColumn(name = "post_id")],
+        inverseJoinColumns = [JoinColumn(name = "user_id")]
+    )               @JsonBackReference("user-likes")
     val likedByUsers: MutableList<UserEntity> = mutableListOf(),
 
-    @ManyToMany(mappedBy = "dislikedPosts")
+    @ManyToMany
+        @JoinTable(
+            name = "user_dislikes",
+            joinColumns = [JoinColumn(name = "post_id")],
+            inverseJoinColumns = [JoinColumn(name = "user_id")]
+        )
     @JsonBackReference("user-dislikes")
     val dislikedByUsers: MutableList<UserEntity> = mutableListOf()
 
