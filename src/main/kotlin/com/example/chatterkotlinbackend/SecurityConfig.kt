@@ -3,7 +3,6 @@ package com.example.chatterkotlinbackend
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.oauth2.jwt.JwtDecoder
@@ -28,19 +27,8 @@ class SecurityConfig {
             }
             .authorizeHttpRequests { auth ->
                 auth
-                    .requestMatchers(HttpMethod.GET, "/posts/favorites").authenticated()
-                    .requestMatchers(HttpMethod.GET, "/posts/*/is-favorited").authenticated()
-                    .requestMatchers(HttpMethod.GET, "/chat/**").authenticated()
-
-                    .requestMatchers(HttpMethod.GET, "/posts", "/posts/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/users", "/users/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/search").permitAll()
-
-                    .requestMatchers(HttpMethod.POST, "/users").permitAll()
-
+// the handshake can't carry a token; WebSocketAuthInterceptor authenticates the STOMP CONNECT
                     .requestMatchers("/ws", "/ws/**").permitAll()
-
                     .anyRequest().authenticated()
             }
             .oauth2ResourceServer { auth -> auth.jwt{}}

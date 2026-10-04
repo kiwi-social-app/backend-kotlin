@@ -3,16 +3,15 @@ package com.example.chatterkotlinbackend.controller
 import com.example.chatterkotlinbackend.GoogleAuthUser
 import com.example.chatterkotlinbackend.dto.UserDTO
 import com.example.chatterkotlinbackend.dto.UserUpdateDTO
-import com.example.chatterkotlinbackend.entity.UserEntity
 import com.example.chatterkotlinbackend.mapper.UserMapper
 import com.example.chatterkotlinbackend.repository.UserRepository
 import com.example.chatterkotlinbackend.service.UserRepositoryService
 import com.example.chatterkotlinbackend.service.UserService
-import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 
 @RestController
 @RequestMapping("/users")
@@ -52,7 +51,12 @@ class UserController {
     fun updateUser(
         @PathVariable userId: String,
         @RequestBody updatedUser: UserUpdateDTO,
+        principal: Principal,
     ): ResponseEntity<UserDTO> {
+        if (userId != principal.name) {
+            return ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+
         return try {
             val existingUser = userRepository.findById(userId)
             if (existingUser.isPresent) {

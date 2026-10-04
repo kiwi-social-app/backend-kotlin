@@ -36,15 +36,9 @@ class ChatController(
         return savedMessage
     }
 
-    @GetMapping("/messages")
-    fun getAllMessages(): ResponseEntity<List<MessageDTO>> {
-        val messages = service.getAllMessages()
-        return ResponseEntity.ok(messages)
-    }
-
     @GetMapping("/messages/{chatId}")
-    fun getMessagesByChatId(@PathVariable chatId: String): ResponseEntity<List<MessageDTO>> {
-        val messages = service.getMessagesByChatId(chatId)
+    fun getMessagesByChatId(@PathVariable chatId: String, principal: Principal): ResponseEntity<List<MessageDTO>> {
+        val messages = service.getMessagesByChatId(principal.name, chatId)
         return ResponseEntity.ok(messages)
     }
 

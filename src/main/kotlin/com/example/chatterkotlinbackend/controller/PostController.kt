@@ -81,15 +81,18 @@ class PostController {
 
     @DeleteMapping("/{id}")
     fun deletePost(
-        @PathVariable id: String
+        @PathVariable id: String,
+        principal: Principal
     ): ResponseEntity<Unit> {
         return try {
             val post = postRepository.findById(id)
-            if (post.isPresent) {
+            if (post.isEmpty) {
+                ResponseEntity(null, HttpStatus.NOT_FOUND)
+            } else if (post.get().author.id != principal.name) {
+                ResponseEntity(null, HttpStatus.FORBIDDEN)
+            } else {
                 postRepository.delete(post.get())
                 ResponseEntity(null, HttpStatus.NO_CONTENT)
-            } else {
-                ResponseEntity(null, HttpStatus.NOT_FOUND)
             }
 
         } catch (e: Exception) {
@@ -100,11 +103,14 @@ class PostController {
     @PutMapping("/{id}")
     fun updatePost(
         @PathVariable id: String,
-        @RequestBody update: PostUpdateDTO
+        @RequestBody update: PostUpdateDTO,
+        principal: Principal
     ): ResponseEntity<PostDTO> {
         return try {
             val existingPost = postRepository.findById(id)
-            if (existingPost.isPresent) {
+            if (existingPost.isPresent && existingPost.get().author.id != principal.name) {
+                ResponseEntity(HttpStatus.FORBIDDEN)
+            } else if (existingPost.isPresent) {
                 val postToUpdate = existingPost.get()
 
                 if (postToUpdate.body != update.body) {

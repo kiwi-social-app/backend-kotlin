@@ -41,12 +41,11 @@ class ChatService(
         return mapper.toDto(savedMessage)
     }
 
-    fun getAllMessages(): List<MessageDTO> {
-        return messageRepository.findAll().map { mapper.toDto(it) }
-    }
-
     @Transactional
-    fun getMessagesByChatId(chatId: String): List<MessageDTO> {
+    fun getMessagesByChatId(userId: String, chatId: String): List<MessageDTO> {
+        chatRepository.findByIdAndParticipantId(chatId, userId)
+            .orElseThrow { AccessDeniedException("User is not part of the chat") }
+
         val messages = messageRepository.findByChatIdWithSender(chatId) ?: emptyList()
         return mapper.toDto(messages)
     }
