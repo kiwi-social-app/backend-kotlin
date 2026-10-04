@@ -7,6 +7,7 @@ import com.example.chatterkotlinbackend.mapper.PostMapper
 import com.example.chatterkotlinbackend.repository.PostRepository
 import com.example.chatterkotlinbackend.repository.UserRepository
 import jakarta.transaction.Transactional
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
@@ -16,6 +17,7 @@ class PostService(
     private val userRepository: UserRepository,
     private val semanticSearchService: SemanticSearchService
 ) {
+    private val logger = LoggerFactory.getLogger(PostService::class.java)
 
     @Transactional
     fun createPost(dto: PostCreationDTO, userId: String): PostDTO {
@@ -27,7 +29,11 @@ class PostService(
 
         val savedPost = postRepository.save(postEntity)
 
-        semanticSearchService.addDocument(savedPost.body, savedPost.id)
+        try {
+            semanticSearchService.addDocument(savedPost.body, savedPost.id)
+        } catch (e: Exception) {
+            logger.warn("Failed to index post {} for semantic search", savedPost.id, e)
+        }
 
         return mapper.toDto(savedPost)
     }
