@@ -8,17 +8,54 @@ on:
 permissions:
   contents: read
 
+env:
+  REGION: europe-west1
+  SERVICE: kiwi-backend
+  IMAGE: europe-west1-docker.pkg.dev/kiwi-social/cloud-run-source-deploy/kiwi-backend
+
 jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
           cache: gradle
-
       - name: Build and test
         run: ./gradlew build
+
+  deploy:
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency: deploy-backend
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/448989396094/locations/global/workloadIdentityPools/github/providers/github-provider
+          service_account: github-deployer@kiwi-social.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v3
+
+      - name: Build and push image
+        run: |
+          gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
+          docker build -t "$IMAGE:$GITHUB_SHA" .
+          docker push "$IMAGE:$GITHUB_SHA"
+
+      - name: Deploy to Cloud Run
+        run: gcloud run deploy "$SERVICE" --image "$IMAGE:$GITHUB_SHA" --region "$REGION" --quiet
+
+      - name: Smoke test
+        run: |
+          URL=$(gcloud run services describe "$SERVICE" --region "$REGION" --format='value(status.url)')
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' "$URL/api/posts")
+          echo "GET /api/posts returned $STATUS"
+          test "$STATUS" = "401"
