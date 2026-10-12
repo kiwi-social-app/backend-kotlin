@@ -1,6 +1,5 @@
 package com.example.chatterkotlinbackend.controller
 
-import com.example.chatterkotlinbackend.GoogleAuthUser
 import com.example.chatterkotlinbackend.dto.UserDTO
 import com.example.chatterkotlinbackend.dto.UserUpdateDTO
 import com.example.chatterkotlinbackend.mapper.UserMapper
@@ -10,7 +9,10 @@ import com.example.chatterkotlinbackend.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import java.security.Principal
 
 @RestController
@@ -34,17 +36,16 @@ class UserController {
         return mapper.toDto(userRepository.findAll())
     }
 
+    @GetMapping("/me")
+    fun getCurrentUser(@AuthenticationPrincipal jwt: Jwt): UserDTO {
+        val email = jwt.getClaimAsString("email")
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+        return userService.getOrCreateUser(jwt.subject, email)
+    }
+
     @GetMapping("/{userId}")
     fun getUserById(@PathVariable userId: String): UserDTO {
         return mapper.toDto(userRepositoryService.getUserById(userId))
-    }
-
-
-    @PostMapping
-    fun createUser(
-        @RequestBody googleAuthUser: GoogleAuthUser,
-    ): UserDTO {
-        return userService.createUser(googleAuthUser);
     }
 
     @PutMapping("/{userId}")

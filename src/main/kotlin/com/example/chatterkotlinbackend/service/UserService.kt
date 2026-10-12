@@ -1,25 +1,21 @@
 package com.example.chatterkotlinbackend.service
 
-import com.example.chatterkotlinbackend.GoogleAuthUser
 import com.example.chatterkotlinbackend.dto.UserDTO
-import com.example.chatterkotlinbackend.entity.UserEntity
 import com.example.chatterkotlinbackend.mapper.UserMapper
 import com.example.chatterkotlinbackend.repository.UserRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserService(private val userRepository: UserRepository, private val mapper: UserMapper) {
 
-    fun createUser(googleAuthUser: GoogleAuthUser): UserDTO {
-        val defaultUsername = generateDefaultUsername(googleAuthUser.email)
+    @Transactional
+    fun getOrCreateUser(uid: String, email: String): UserDTO {
+        userRepository.findByIdOrNull(uid)?.let { return mapper.toDto(it) }
 
-        val newUser = UserEntity(
-            id = googleAuthUser.uid,
-            email = googleAuthUser.email,
-            username = defaultUsername
-        )
-        val createdUser = userRepository.save(newUser)
-        return mapper.toDto(createdUser);
+        userRepository.insertIfAbsent(uid, email, generateDefaultUsername(email))
+        return mapper.toDto(userRepository.findById(uid).orElseThrow())
     }
 
     private fun generateDefaultUsername(email: String): String {

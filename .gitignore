@@ -43,3 +43,5 @@ out/
 
 # Cloud Run deploy config
 prod.env.yaml
+
+.DS_Store
