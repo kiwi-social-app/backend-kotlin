@@ -77,3 +77,7 @@ tasks.withType<Test> {
 
     exclude("**/ChatterKotlinBackendApplicationTests.*")
 }
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    environment("SPRING_PROFILES_ACTIVE", System.getenv("SPRING_PROFILES_ACTIVE") ?: "local")
+}
